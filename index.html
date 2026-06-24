@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>拡大コピーのひみつシミュレーター</title>
+
+<style>
+
+body{
+    font-family:"Yu Gothic",sans-serif;
+    text-align:center;
+    margin:20px;
+}
+
+h1{
+    font-size:2rem;
+}
+
+.paperArea{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:80px;
+    margin-top:30px;
+    min-height:500px;
+}
+
+.paperGroup{
+    text-align:center;
+}
+
+.paperLabel{
+    font-size:1.4rem;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.paper{
+    background:white;
+    border:3px solid black;
+    box-sizing:border-box;
+    padding:12px;
+    overflow:hidden;
+    transition:all 0.2s;
+}
+
+#a4Paper{
+    width:148px;
+    height:210px;
+}
+
+#scaledPaper{
+    width:148px;
+    height:210px;
+}
+
+.sampleText{
+    text-align:left;
+    line-height:1.4;
+    transform-origin:top left;
+}
+
+.controls{
+    margin-top:30px;
+}
+
+.control{
+    margin:25px 0;
+}
+
+label{
+    display:block;
+    font-size:1.3rem;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+input[type="number"]{
+    width:140px;
+    font-size:1.4rem;
+    text-align:center;
+}
+
+input[type="range"]{
+    width:80%;
+    max-width:600px;
+}
+
+#areaBox{
+    font-size:2rem;
+    font-weight:bold;
+    margin-top:25px;
+}
+
+#message{
+    font-size:1.8rem;
+    font-weight:bold;
+    color:purple;
+    min-height:50px;
+    margin-top:10px;
+}
+
+#info{
+    font-size:1.3rem;
+    line-height:1.8;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>拡大コピーのひみつシミュレーター</h1>
+
+<div class="paperArea">
+
+<div class="paperGroup">
+
+<div class="paperLabel">
+基準（A4）
+</div>
+
+<div id="a4Paper" class="paper">
+
+<div class="sampleText"
+style="font-size:10.5pt;">
+
+福岡県<br>
+北九州市<br>
+八幡東区
+
+</div>
+
+</div>
+
+</div>
+
+<div class="paperGroup">
+
+<div class="paperLabel">
+変形後
+</div>
+
+<div id="scaledPaper" class="paper">
+
+<div id="scaledText"
+class="sampleText"
+style="font-size:10.5pt;">
+
+福岡県<br>
+北九州市<br>
+八幡東区
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<div class="control">
+
+<label>
+縦倍率 (%)
+</label>
+
+<input
+type="number"
+id="heightInput"
+value="100"
+min="50"
+max="200">
+
+<br><br>
+
+<input
+type="range"
+id="heightSlider"
+min="50"
+max="200"
+value="100">
+
+</div>
+
+<div class="control">
+
+<label>
+横倍率 (%)
+</label>
+
+<input
+type="number"
+id="widthInput"
+value="100"
+min="50"
+max="200">
+
+<br><br>
+
+<input
+type="range"
+id="widthSlider"
+min="50"
+max="200"
+value="100">
+
+</div>
+
+</div>
+
+<div id="areaBox">
+面積倍率：1.00倍
+</div>
+
+<div id="message"></div>
+
+<div id="info"></div>
+
+<script>
+
+const heightInput =
+document.getElementById("heightInput");
+
+const widthInput =
+document.getElementById("widthInput");
+
+const heightSlider =
+document.getElementById("heightSlider");
+
+const widthSlider =
+document.getElementById("widthSlider");
+
+const scaledPaper =
+document.getElementById("scaledPaper");
+
+const scaledText =
+document.getElementById("scaledText");
+
+const areaBox =
+document.getElementById("areaBox");
+
+const message =
+document.getElementById("message");
+
+const info =
+document.getElementById("info");
+
+function updateDisplay(){
+
+const heightScale =
+parseFloat(heightInput.value) || 100;
+
+const widthScale =
+parseFloat(widthInput.value) || 100;
+
+heightSlider.value =
+heightScale;
+
+widthSlider.value =
+widthScale;
+
+scaledPaper.style.width =
+(148 * widthScale / 100) + "px";
+
+scaledPaper.style.height =
+(210 * heightScale / 100) + "px";
+
+scaledText.style.transform =
+`scaleX(${widthScale/100})
+ scaleY(${heightScale/100})`;
+
+const areaRatio =
+(heightScale/100) *
+(widthScale/100);
+
+areaBox.innerHTML =
+`面積倍率：${areaRatio.toFixed(2)}倍`;
+
+const scaledWidth =
+210 * widthScale / 100;
+
+const scaledHeight =
+297 * heightScale / 100;
+
+info.innerHTML =
+
+`縦倍率：${heightScale.toFixed(1)}％<br>
+横倍率：${widthScale.toFixed(1)}％<br><br>
+
+横：210mm → ${scaledWidth.toFixed(1)}mm<br>
+縦：297mm → ${scaledHeight.toFixed(1)}mm`;
+
+if(Math.abs(areaRatio - 2) < 0.03){
+
+scaledPaper.style.border =
+"8px solid purple";
+
+message.innerHTML =
+"🎉 面積２倍達成！";
+
+}else{
+
+scaledPaper.style.border =
+"3px solid black";
+
+message.innerHTML = "";
+
+}
+
+}
+
+heightInput.addEventListener(
+"input",
+updateDisplay
+);
+
+widthInput.addEventListener(
+"input",
+updateDisplay
+);
+
+heightSlider.addEventListener(
+"input",
+()=>{
+
+heightInput.value =
+heightSlider.value;
+
+updateDisplay();
+
+}
+);
+
+widthSlider.addEventListener(
+"input",
+()=>{
+
+widthInput.value =
+widthSlider.value;
+
+updateDisplay();
+
+}
+);
+
+updateDisplay();
+
+</script>
+
+</body>
+</html>
