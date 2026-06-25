@@ -25,12 +25,7 @@ h1{
 }
 
 .control{
-    margin:15px 0;
-}
-
-button{
-    font-size:1.3rem;
-    padding:10px 20px;
+    margin:20px 0;
 }
 
 label{
@@ -39,13 +34,13 @@ label{
 }
 
 input[type="number"]{
-    width:120px;
+    width:130px;
     font-size:1.4rem;
     text-align:center;
 }
 
 input[type="range"]{
-    width:85%;
+    width:90%;
 }
 
 #paperArea{
@@ -53,8 +48,8 @@ input[type="range"]{
     justify-content:center;
     align-items:flex-end;
     gap:80px;
+    min-height:450px;
     margin-top:20px;
-    min-height:420px;
 }
 
 .paperGroup{
@@ -70,12 +65,12 @@ input[type="range"]{
 .paper{
     background:white;
     border:4px solid black;
-    box-sizing:border-box;
     overflow:hidden;
+    box-sizing:border-box;
     position:relative;
 }
 
-#a4Paper{
+#basePaper{
     width:148px;
     height:210px;
 }
@@ -85,15 +80,15 @@ input[type="range"]{
     height:210px;
 }
 
-#paperContent{
-    transform-origin:top left;
+.paperContent{
     padding:12px;
+    transform-origin:top left;
 }
 
 .sampleText{
     text-align:left;
-    line-height:1.4;
     font-size:10.5pt;
+    line-height:1.4;
 }
 
 .box{
@@ -111,19 +106,15 @@ input[type="range"]{
     margin-top:20px;
 }
 
-#sliderArea{
-    margin-top:20px;
-}
-
 .sliderBlock{
-    margin:20px auto;
     width:90%;
     max-width:700px;
+    margin:25px auto;
 }
 
 #info{
     margin-top:20px;
-    font-size:1.3rem;
+    font-size:1.4rem;
     line-height:1.8;
     font-weight:bold;
 }
@@ -134,6 +125,7 @@ input[type="range"]{
 <body>
 
 <h1>拡大コピーシミュレーター</h1>
+
 <div class="control">
 
 <label>
@@ -143,7 +135,7 @@ checked>
 文字を表示
 </label>
 
-&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;
 
 <label>
 <input type="checkbox"
@@ -153,17 +145,19 @@ checked>
 </label>
 
 </div>
+
 <div id="paperArea">
 
 <div class="paperGroup">
 
 <div class="paperLabel">
-基準（A4）
+基準用紙
 </div>
 
-<div id="a4Paper" class="paper">
+<div id="basePaper"
+class="paper">
 
-<div style="padding:12px">
+<div class="paperContent">
 
 <div class="sampleText">
 福岡県<br>
@@ -187,9 +181,11 @@ checked>
 変形後
 </div>
 
-<div id="scaledPaper" class="paper">
+<div id="scaledPaper"
+class="paper">
 
-<div id="paperContent">
+<div id="scaledContent"
+class="paperContent">
 
 <div class="sampleText">
 福岡県<br>
@@ -209,11 +205,10 @@ checked>
 
 </div>
 
-<div id="sliderArea">
-
 <div class="sliderBlock">
 
-<label>横方向（％）</label>
+<label>横倍率（％）</label>
+
 <br><br>
 
 <input
@@ -228,15 +223,16 @@ max="200">
 <input
 type="range"
 id="widthSlider"
+value="100"
 min="50"
-max="200"
-value="100">
+max="200">
 
 </div>
 
 <div class="sliderBlock">
 
-<label>縦方向（％）</label>
+<label>縦倍率（％）</label>
+
 <br><br>
 
 <input
@@ -251,11 +247,9 @@ max="200">
 <input
 type="range"
 id="heightSlider"
+value="100"
 min="50"
-max="200"
-value="100">
-
-</div>
+max="200">
 
 </div>
 
@@ -278,117 +272,91 @@ document.getElementById("heightSlider");
 const scaledPaper =
 document.getElementById("scaledPaper");
 
-const paperContent =
-document.getElementById("paperContent");
+const scaledContent =
+document.getElementById("scaledContent");
 
-const info =
-document.getElementById("info");
 const textCheck =
 document.getElementById("textCheck");
 
 const shapeCheck =
 document.getElementById("shapeCheck");
-function updateDisplay(){
 
-    let widthScale =
-    parseFloat(widthInput.value);
-
-    let heightScale =
-    parseFloat(heightInput.value);
-
-    if(isNaN(widthScale)) widthScale = 100;
-    if(isNaN(heightScale)) heightScale = 100;
-
-    widthSlider.value = widthScale;
-    heightSlider.value = heightScale;
-
-    scaledPaper.style.width =
-    (148 * widthScale / 100) + "px";
-
-    scaledPaper.style.height =
-    (210 * heightScale / 100) + "px";
-
-    paperContent.style.transform =
-    `scaleX(${widthScale/100})
-     scaleY(${heightScale/100})`;
-
-    const areaRatio =
-    (widthScale/100) *
-    (heightScale/100);
-
-    if(Math.abs(areaRatio - 2) < 0.03){
-
-        scaledPaper.style.border =
-        "8px solid purple";
-
-    }else{
-
-        scaledPaper.style.border =
-        "4px solid black";
-
-    }
-
-    info.innerHTML =
-
-    `横倍率：${widthScale.toFixed(0)}％<br>
-     縦倍率：${heightScale.toFixed(0)}％<br><br>
-
-     面積倍率：
-     ${areaRatio.toFixed(2)}倍`;
-
-}
+const info =
+document.getElementById("info");
 
 function updateVisibility(){
 
-    document
-    .querySelectorAll(".sampleText")
-    .forEach(el=>{
+document
+.querySelectorAll(".sampleText")
+.forEach(el=>{
 
-        el.style.display =
-        textCheck.checked
-        ? "block"
-        : "none";
+el.style.display =
+textCheck.checked
+? "block"
+: "none";
 
-    });
+});
 
-    document
-    .querySelectorAll(".box,.circle")
-    .forEach(el=>{
+document
+.querySelectorAll(".box,.circle")
+.forEach(el=>{
 
-        el.style.display =
-        shapeCheck.checked
-        ? "block"
-        : "none";
+el.style.display =
+shapeCheck.checked
+? "block"
+: "none";
 
-    });
-
-}
-
-textCheck.addEventListener(
-"change",
-updateVisibility
-);
-
-shapeCheck.addEventListener(
-"change",
-updateVisibility
-);
-
-updateVisibility();
+});
 
 }
 
-textCheck.addEventListener(
-"change",
-updateVisibility
-);
+function updateDisplay(){
 
-shapeCheck.addEventListener(
-"change",
-updateVisibility
-);
+let widthScale =
+parseFloat(widthInput.value);
 
-updateVisibility();
+let heightScale =
+parseFloat(heightInput.value);
+
+if(isNaN(widthScale)) widthScale = 100;
+if(isNaN(heightScale)) heightScale = 100;
+
+widthSlider.value = widthScale;
+heightSlider.value = heightScale;
+
+scaledPaper.style.width =
+(148 * widthScale / 100) + "px";
+
+scaledPaper.style.height =
+(210 * heightScale / 100) + "px";
+
+scaledContent.style.transform =
+`scale(${widthScale/100},${heightScale/100})`;
+
+const areaRatio =
+(widthScale/100) *
+(heightScale/100);
+
+if(Math.abs(areaRatio - 2) < 0.03){
+
+scaledPaper.style.border =
+"8px solid purple";
+
+}else{
+
+scaledPaper.style.border =
+"4px solid black";
+
+}
+
+info.innerHTML =
+
+`横倍率：${widthScale.toFixed(0)}％<br>
+縦倍率：${heightScale.toFixed(0)}％<br><br>
+面積倍率：${areaRatio.toFixed(2)}倍`;
+
+}
+
 widthInput.addEventListener(
 "input",
 updateDisplay
@@ -401,24 +369,39 @@ updateDisplay
 
 widthSlider.addEventListener(
 "input",
-()=>{
-    widthInput.value =
-    widthSlider.value;
+function(){
 
-    updateDisplay();
+widthInput.value =
+widthSlider.value;
+
+updateDisplay();
+
 }
 );
 
 heightSlider.addEventListener(
 "input",
-()=>{
-    heightInput.value =
-    heightSlider.value;
+function(){
 
-    updateDisplay();
+heightInput.value =
+heightSlider.value;
+
+updateDisplay();
+
 }
 );
 
+textCheck.addEventListener(
+"change",
+updateVisibility
+);
+
+shapeCheck.addEventListener(
+"change",
+updateVisibility
+);
+
+updateVisibility();
 updateDisplay();
 
 </script>
