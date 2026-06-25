@@ -28,6 +28,11 @@ h1{
     margin:15px 0;
 }
 
+button{
+    font-size:1.3rem;
+    padding:10px 20px;
+}
+
 label{
     font-size:1.3rem;
     font-weight:bold;
@@ -129,7 +134,25 @@ input[type="range"]{
 <body>
 
 <h1>拡大コピーシミュレーター</h1>
+<div class="control">
 
+<label>
+<input type="checkbox"
+id="textCheck"
+checked>
+文字を表示
+</label>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<label>
+<input type="checkbox"
+id="shapeCheck"
+checked>
+図形を表示
+</label>
+
+</div>
 <div id="paperArea">
 
 <div class="paperGroup">
@@ -260,7 +283,11 @@ document.getElementById("paperContent");
 
 const info =
 document.getElementById("info");
+const textCheck =
+document.getElementById("textCheck");
 
+const shapeCheck =
+document.getElementById("shapeCheck");
 function updateDisplay(){
 
     let widthScale =
@@ -311,6 +338,43 @@ function updateDisplay(){
 
 }
 
+function updateVisibility(){
+
+    document
+    .querySelectorAll(".sampleText")
+    .forEach(el=>{
+
+        el.style.display =
+        textCheck.checked
+        ? "block"
+        : "none";
+
+    });
+
+    document
+    .querySelectorAll(".box,.circle")
+    .forEach(el=>{
+
+        el.style.display =
+        shapeCheck.checked
+        ? "block"
+        : "none";
+
+    });
+
+}
+
+textCheck.addEventListener(
+"change",
+updateVisibility
+);
+
+shapeCheck.addEventListener(
+"change",
+updateVisibility
+);
+
+updateVisibility();
 widthInput.addEventListener(
 "input",
 updateDisplay
