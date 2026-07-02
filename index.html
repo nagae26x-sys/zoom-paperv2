@@ -112,11 +112,19 @@ input[type="range"]{
     margin:25px auto;
 }
 
+/* 面積倍率とチェックボックスの並び調整用 */
+.infoArea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
 #info{
-    margin-top:20px;
-    font-size:1.4rem;
-    line-height:1.8;
-    font-weight:bold;
+    line-height: 1.8;
 }
 
 </style>
@@ -248,7 +256,13 @@ max="300">
 </div>
 
 </div>
-<div id="info"></div>
+
+<div class="infoArea">
+    <label>
+        <input type="checkbox" id="lockRatioCheck"> 縦横比を固定
+    </label>
+    <div id="info"></div>
+</div>
 
 <script>
 
@@ -275,6 +289,10 @@ document.getElementById("textCheck");
 
 const shapeCheck =
 document.getElementById("shapeCheck");
+
+// 縦横比固定チェックボックスの取得
+const lockRatioCheck = 
+document.getElementById("lockRatioCheck");
 
 const info =
 document.getElementById("info");
@@ -350,37 +368,62 @@ info.innerHTML =
 
 }
 
+// 横入力をトリガーに縦を変更する関数
+function syncHeight() {
+    if (lockRatioCheck.checked) {
+        heightInput.value = widthInput.value;
+    }
+}
+
+// 縦入力をトリガーに横を変更する関数
+function syncWidth() {
+    if (lockRatioCheck.checked) {
+        widthInput.value = heightInput.value;
+    }
+}
+
 widthInput.addEventListener(
 "input",
-updateDisplay
+function() {
+    syncHeight();
+    updateDisplay();
+}
 );
 
 heightInput.addEventListener(
 "input",
-updateDisplay
+function() {
+    syncWidth();
+    updateDisplay();
+}
 );
 
 widthSlider.addEventListener(
 "input",
 function(){
-
-widthInput.value =
-widthSlider.value;
-
-updateDisplay();
-
+    widthInput.value = widthSlider.value;
+    syncHeight();
+    updateDisplay();
 }
 );
 
 heightSlider.addEventListener(
 "input",
 function(){
+    heightInput.value = heightSlider.value;
+    syncWidth();
+    updateDisplay();
+}
+);
 
-heightInput.value =
-heightSlider.value;
-
-updateDisplay();
-
+// チェックを入れた瞬間に、現在の横倍率に合わせて縦倍率を強制同期させる
+lockRatioCheck.addEventListener(
+"change",
+function() {
+    if (lockRatioCheck.checked) {
+        syncHeight();
+        updateDisplay();
+    }
 }
 );
 
